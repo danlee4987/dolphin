@@ -275,6 +275,8 @@ void SConfig::SaveCoreSettings(IniFile& ini)
   core->Set("GFXBackend", m_strVideoBackend);
   core->Set("GPUDeterminismMode", m_strGPUDeterminismMode);
   core->Set("PerfMapDir", m_perfDir);
+  core->Set("EnableCustomRTC", bEnableCustomRTC);
+  core->Set("CustomRTCValue", m_customRTCValue);
 }
 
 void SConfig::SaveMovieSettings(IniFile& ini)
@@ -286,6 +288,7 @@ void SConfig::SaveMovieSettings(IniFile& ini)
   movie->Set("DumpFrames", m_DumpFrames);
   movie->Set("DumpFramesSilent", m_DumpFramesSilent);
   movie->Set("ShowInputDisplay", m_ShowInputDisplay);
+  movie->Set("ShowRTC", m_ShowRTC);
 }
 
 void SConfig::SaveDSPSettings(IniFile& ini)
@@ -553,6 +556,9 @@ void SConfig::LoadCoreSettings(IniFile& ini)
   core->Get("GFXBackend", &m_strVideoBackend, "");
   core->Get("GPUDeterminismMode", &m_strGPUDeterminismMode, "auto");
   core->Get("PerfMapDir", &m_perfDir, "");
+  core->Get("EnableCustomRTC", &bEnableCustomRTC, false);
+  // Default to seconds between 1.1.1970 and 1.1.2000
+  core->Get("CustomRTCValue", &m_customRTCValue, 946684800);
 }
 
 void SConfig::LoadMovieSettings(IniFile& ini)
@@ -564,6 +570,7 @@ void SConfig::LoadMovieSettings(IniFile& ini)
   movie->Get("DumpFrames", &m_DumpFrames, false);
   movie->Get("DumpFramesSilent", &m_DumpFramesSilent, false);
   movie->Get("ShowInputDisplay", &m_ShowInputDisplay, false);
+  movie->Get("ShowRTC", &m_ShowRTC, false);
 }
 
 void SConfig::LoadDSPSettings(IniFile& ini)

@@ -93,6 +93,15 @@ else()
 	add_definitions(-DDATA_DIR="${datadir}/")
 endif()
 
+# Set file offset size to 64 bits.
+#
+# On modern Unixes, this is typically already the case. The lone exception is
+# glibc, which may default to 32 bits. glibc allows this to be configured
+# by setting _FILE_OFFSET_BITS.
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	add_definitions(-D_FILE_OFFSET_BITS=64)
+endif()
+
 # Set where the binary files will be built.  The program will not execute from
 # here.  You must run "make install" to install these to the proper location
 # as defined above.
@@ -320,7 +329,7 @@ if(APPLE)
 	find_library(COREAUDIO_LIBRARY CoreAudio)
 	find_library(COREFUND_LIBRARY CoreFoundation)
 	find_library(CORESERV_LIBRARY CoreServices)
-	find_library(FOUNDATION_LIBRARY foundation)
+	find_library(FOUNDATION_LIBRARY Foundation)
 	find_library(IOB_LIBRARY IOBluetooth)
 	find_library(IOK_LIBRARY IOKit)
 	find_library(QUICKTIME_LIBRARY QuickTime)
@@ -415,7 +424,7 @@ if(ANDROID)
 	# We are cross compiling, search only the toolchain for libraries and includes
 	SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 	SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-elseif(NOT APPLE)
+elseif(NOT APPLE AND NOT CMAKE_SYSTEM_NAME MATCHES OpenBSD)
 	list(APPEND LIBS rt)
 endif()
 
@@ -893,6 +902,8 @@ if(NOT DISABLE_WX)
 			# Check for required libs
 			check_lib(GTHREAD2 gthread-2.0 gthread-2.0 glib/gthread.h REQUIRED)
 			check_lib(PANGOCAIRO pangocairo pangocairo pango/pangocairo.h REQUIRED)
+			# On Linux "backtrace" is part of glibc. FreeBSD has a separate library.
+			# Required for wxUSE_STACKWALKER in Externals/wxWidgets3/wx/wxgtk.h
 			find_package(Backtrace REQUIRED)
 		elseif(WIN32)
 			add_definitions(-D__WXMSW__)
@@ -990,10 +1001,10 @@ add_subdirectory(Source)
 if(NOT APPLE)
 	install(DIRECTORY Data/Sys/ DESTINATION ${datadir}/sys PATTERN)
 endif()
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Linux|FreeBSD|Darwin")
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Linux|FreeBSD|OpenBSD|Darwin")
 	install(FILES Data/license.txt DESTINATION ${datadir})
 endif()
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux|FreeBSD|OpenBSD")
 	# Install the application icon and menu item
 	install(FILES Data/dolphin-emu.svg
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)

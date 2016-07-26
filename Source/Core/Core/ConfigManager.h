@@ -139,6 +139,10 @@ struct SConfig : NonCopyable
   // Fifo Player related settings
   bool bLoopFifoReplay;
 
+  // Custom RTC
+  bool bEnableCustomRTC;
+  u32 m_customRTCValue;
+
   enum EBootBS2
   {
     BOOT_DEFAULT,
@@ -255,6 +259,7 @@ struct SConfig : NonCopyable
   bool m_PauseMovie;
   bool m_ShowLag;
   bool m_ShowFrameCount;
+  bool m_ShowRTC;
   std::string m_strMovieAuthor;
   unsigned int m_FrameSkip;
   bool m_DumpFrames;
